@@ -118,3 +118,34 @@ php artisan migrate:refresh --seed
 ```
 
 This will drop and recreate all tables with fresh demo data.
+
+
+CloudPanel Setup
+
+Create a PHP Site in CloudPanel for your domain.
+Set the site path to something like /home/cloudpanel/htdocs/hr.
+Set Document Root to /home/cloudpanel/htdocs/hr/public.
+In DNS, point your domain A record to the server IP, then enable Let’s Encrypt SSL in CloudPanel.
+Deploy Repo
+
+SSH into server, then:
+cd /home/cloudpanel/htdocs
+git clone https://github.com/m1s3rys1gn4l/hr.git hr
+cd hr/laravel (if repo root contains laravel folder)
+Install app:
+composer install --no-dev --optimize-autoloader
+cp [.env.example](http://_vscodecontentref_/1) .env
+php artisan key:generate
+Production Config
+
+Edit .env:
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://yourdomain.com
+Set DB creds (CloudPanel MySQL recommended)
+Then run:
+php artisan migrate --force
+php artisan db:seed --class=AdminUserSeeder --force
+php artisan storage:link
+php artisan optimize
+chmod -R 775 storage bootstrap/cache
