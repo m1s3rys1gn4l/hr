@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@php($dashboardUser = auth()->user())
 <div class="card">
     <h2>Admin Dashboard</h2>
     <p class="muted">Currency: Saudi Riyal (SAR)</p>
@@ -34,7 +35,13 @@
                 <td>{{ ucfirst($employee->status) }}</td>
                 <td>{{ number_format($employee->daily_salary, 2) }} SAR</td>
                 <td>{{ number_format($employee->current_balance, 2) }} SAR</td>
-                <td><a class="btn btn-secondary" href="{{ route('employees.show', $employee) }}">Profile</a></td>
+                <td>
+                    @if($dashboardUser->hasPermission('view_employee_profiles'))
+                        <a class="btn btn-secondary" href="{{ route('employees.show', $employee) }}">Profile</a>
+                    @else
+                        -
+                    @endif
+                </td>
             </tr>
         @empty
             <tr><td colspan="6">No records yet.</td></tr>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
+    <title>System Login</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background: #f6f8fb; color: #222; display: grid; min-height: 100vh; place-items: center; }
         .card { width: 100%; max-width: 420px; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; }
@@ -19,7 +19,7 @@
 </head>
 <body>
 <div class="card">
-    <h2>Admin Login</h2>
+    <h2>System Login</h2>
 
     @if($errors->any())
         <div class="error">{{ $errors->first() }}</div>
@@ -42,7 +42,7 @@
         <button type="submit">Sign in</button>
     </form>
 
-    <p class="muted">Only admin users can access this system.</p>
+    <p class="muted">Sign in with your assigned account.</p>
 </div>
 </body>
 </html>

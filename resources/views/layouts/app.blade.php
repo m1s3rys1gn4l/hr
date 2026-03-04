@@ -27,14 +27,27 @@
 </head>
 <body>
 @auth
+    @php($navUser = auth()->user())
     <nav>
         <a href="{{ route('dashboard') }}">Dashboard</a>
-        <a href="{{ route('employees.index') }}">Employees</a>
-        <a href="{{ route('employees.left') }}">Left Employees</a>
-        <a href="{{ route('attendance.create') }}">Attendance</a>
-        <a href="{{ route('payouts.create') }}">Payouts</a>
-        <a href="{{ route('reports.index') }}">Reports</a>
-        <a href="{{ route('settings.edit') }}">Settings</a>
+        @if($navUser->hasPermission('manage_employees'))
+            <a href="{{ route('employees.index') }}">Employees</a>
+            <a href="{{ route('employees.left') }}">Left Employees</a>
+        @endif
+        @if($navUser->hasPermission('manage_attendance'))
+            <a href="{{ route('attendance.create') }}">Attendance</a>
+        @endif
+        @if($navUser->hasPermission('manage_payouts'))
+            <a href="{{ route('payouts.create') }}">Payouts</a>
+        @endif
+        @if($navUser->hasPermission('view_reports'))
+            <a href="{{ route('reports.index') }}">Reports</a>
+        @endif
+        @if($navUser->is_admin)
+            <a href="{{ route('admin.profile') }}">Admin Profile</a>
+            <a href="{{ route('admin.users.index') }}">Users</a>
+            <a href="{{ route('settings.edit') }}">Settings</a>
+        @endif
         <form method="POST" action="{{ route('logout') }}" class="nav-logout">
             @csrf
             <button type="submit">Logout</button>

@@ -27,14 +27,6 @@ class AdminAuthController extends Controller
 
         $request->session()->regenerate();
 
-        if (! $request->user()?->is_admin) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return back()->withErrors(['email' => 'Only admin users can sign in.']);
-        }
-
         return redirect()->route('dashboard');
     }
 
