@@ -59,6 +59,8 @@ class PayoutController extends Controller
 
     public function store(Request $request)
     {
+        $returnTo = (string) $request->input('return_to', '');
+
         $validated = $request->validate([
             'payouts' => ['required', 'array', 'min:1'],
             'payouts.*.employee_id' => ['required', 'exists:employees,id'],
@@ -82,11 +84,6 @@ class PayoutController extends Controller
                 $employeeCodes[] = $employee->employee_code;
                 $amount = (float) $payoutData['amount'];
 
-                if ($amount > (float) $employee->current_balance) {
-                    $errors[] = "Employee {$employee->employee_code} ({$employee->name}): Payout amount exceeds balance.";
-                    continue;
-                }
-
                 Payout::create([
                     'employee_id' => $employee->id,
                     'amount' => $amount,
@@ -101,6 +98,11 @@ class PayoutController extends Controller
 
         if (! empty($errors)) {
             return back()->withErrors(['bulk' => $errors])->withInput();
+        }
+
+        if ($returnTo !== '') {
+            return redirect()->to($returnTo)
+                ->with('status', "Successfully processed {$successCount} payout(s).");
         }
 
         $codesParam = implode('+', $employeeCodes);

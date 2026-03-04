@@ -26,6 +26,7 @@ Route::middleware('admin.auth')->group(function () {
 	Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
 	Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
 	Route::get('/employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
+	Route::get('/employees/{employee}/export-history', [EmployeeController::class, 'exportHistory'])->name('employees.export-history');
 	Route::patch('/employees/{employee}/left', [EmployeeController::class, 'markLeft'])->name('employees.mark-left');
 	Route::patch('/employees/{employee}/reactivate', [EmployeeController::class, 'reactivate'])->name('employees.reactivate');
 

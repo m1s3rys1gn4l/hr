@@ -24,6 +24,24 @@
 </div>
 
 <div class="card">
+    <form method="GET" action="{{ route('employees.show', $employee) }}" class="row">
+        <div>
+            <label for="from_datetime">From (Date & Time)</label>
+            <input type="datetime-local" id="from_datetime" name="from_datetime" value="{{ $fromDateTime }}">
+        </div>
+        <div>
+            <label for="to_datetime">To (Date & Time)</label>
+            <input type="datetime-local" id="to_datetime" name="to_datetime" value="{{ $toDateTime }}">
+        </div>
+        <div style="display:flex; align-items:end; gap:8px;">
+            <button class="btn" type="submit">Apply Filter</button>
+            <a class="btn btn-secondary" href="{{ route('employees.show', $employee) }}">Reset</a>
+            <a class="btn" href="{{ route('employees.export-history', $employee, request()->query()) }}">Export Excel (.xlsx)</a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
     <h3>Attendance History</h3>
     <table>
         <thead>
@@ -47,7 +65,22 @@
         @endforelse
         </tbody>
     </table>
-    <div style="margin-top:10px;">{{ $attendanceHistory->links() }}</div>
+    @if($attendanceHistory->hasPages())
+        <div style="margin-top:10px; text-align:center; font-size:12px;">
+            Page {{ $attendanceHistory->currentPage() }} of {{ $attendanceHistory->lastPage() }}
+            @if($attendanceHistory->onFirstPage())
+                <span style="color:#9ca3af; margin-left:8px;">← Prev</span>
+            @else
+                <a href="{{ $attendanceHistory->previousPageUrl() }}" style="margin-left:8px; color:#2563eb; text-decoration:none;">← Prev</a>
+            @endif
+            |
+            @if($attendanceHistory->hasMorePages())
+                <a href="{{ $attendanceHistory->nextPageUrl() }}" style="color:#2563eb; text-decoration:none;">Next →</a>
+            @else
+                <span style="color:#9ca3af;">Next →</span>
+            @endif
+        </div>
+    @endif
 </div>
 
 <div class="card">
@@ -72,6 +105,21 @@
         @endforelse
         </tbody>
     </table>
-    <div style="margin-top:10px;">{{ $payoutHistory->links() }}</div>
+    @if($payoutHistory->hasPages())
+        <div style="margin-top:10px; text-align:center; font-size:12px;">
+            Page {{ $payoutHistory->currentPage() }} of {{ $payoutHistory->lastPage() }}
+            @if($payoutHistory->onFirstPage())
+                <span style="color:#9ca3af; margin-left:8px;">← Prev</span>
+            @else
+                <a href="{{ $payoutHistory->previousPageUrl() }}" style="margin-left:8px; color:#2563eb; text-decoration:none;">← Prev</a>
+            @endif
+            |
+            @if($payoutHistory->hasMorePages())
+                <a href="{{ $payoutHistory->nextPageUrl() }}" style="color:#2563eb; text-decoration:none;">Next →</a>
+            @else
+                <span style="color:#9ca3af;">Next →</span>
+            @endif
+        </div>
+    @endif
 </div>
 @endsection
