@@ -1,29 +1,21 @@
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="{!! __('Pagination Navigation') !!}">
-        <ul class="pagination">
-            {{-- Previous Page Link --}}
+    <div style="text-align: center; margin-top: 16px;">
+        <span style="font-size: 13px; color: #6b7280;">
+            Page {{ $paginator->currentPage() }} of {{ $paginator->lastPage() }}
+        </span>
+        <br>
+        <div style="display: inline-flex; gap: 6px; margin-top: 8px;">
             @if ($paginator->onFirstPage())
-                <li class="page-item disabled" aria-disabled="true">
-                    <span class="page-link">{!! __('pagination.previous') !!}</span>
-                </li>
+                <span style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 4px; color: #9ca3af; cursor: not-allowed; font-size: 12px;">← Previous</span>
             @else
-                <li class="page-item">
-                    <a class="page-link" href="{{ $paginator->previousPageUrl() }}" rel="prev">
-                        {!! __('pagination.previous') !!}
-                    </a>
-                </li>
+                <a href="{{ $paginator->previousPageUrl() }}" rel="prev" style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 4px; color: #2563eb; text-decoration: none; font-size: 12px; display: inline-block;">← Previous</a>
             @endif
 
-            {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
-                <li class="page-item">
-                    <a class="page-link" href="{{ $paginator->nextPageUrl() }}" rel="next">{!! __('pagination.next') !!}</a>
-                </li>
+                <a href="{{ $paginator->nextPageUrl() }}" rel="next" style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 4px; color: #2563eb; text-decoration: none; font-size: 12px; display: inline-block;">Next →</a>
             @else
-                <li class="page-item disabled" aria-disabled="true">
-                    <span class="page-link">{!! __('pagination.next') !!}</span>
-                </li>
+                <span style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 4px; color: #9ca3af; cursor: not-allowed; font-size: 12px;">Next →</span>
             @endif
-        </ul>
-    </nav>
+        </div>
+    </div>
 @endif
