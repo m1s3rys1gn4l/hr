@@ -44,7 +44,7 @@
         </tbody>
     </table>
     @if($recentAttendance->hasPages())
-        <div style="margin-top:12px; text-align:center;">
+        <div style="margin-top:12px; text-align:center; overflow-x: auto;">
             {{ $recentAttendance->links() }}
         </div>
     @endif
@@ -75,7 +75,7 @@
         </tbody>
     </table>
     @if($recentPayouts->hasPages())
-        <div style="margin-top:12px; text-align:center;">
+        <div style="margin-top:12px; text-align:center; overflow-x: auto;">
             {{ $recentPayouts->links() }}
         </div>
     @endif
