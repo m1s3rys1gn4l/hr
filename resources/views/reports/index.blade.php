@@ -43,11 +43,20 @@
         @endforelse
         </tbody>
     </table>
-    @if($recentAttendance->hasPages())
-        <div style="margin-top:12px; text-align:center; overflow-x: auto;">
-            {{ $recentAttendance->links() }}
-        </div>
-    @endif
+    <div style="margin-top: 12px; text-align: center; font-size: 12px;">
+        Page {{ $recentAttendance->currentPage() }} of {{ $recentAttendance->lastPage() }} 
+        @if($recentAttendance->onFirstPage())
+            <span style="color: #9ca3af;">← Prev</span>
+        @else
+            <a href="{{ $recentAttendance->previousPageUrl() }}" style="color: #2563eb; text-decoration: none;">← Prev</a>
+        @endif
+        | 
+        @if($recentAttendance->hasMorePages())
+            <a href="{{ $recentAttendance->nextPageUrl() }}" style="color: #2563eb; text-decoration: none;">Next →</a>
+        @else
+            <span style="color: #9ca3af;">Next →</span>
+        @endif
+    </div>
 </div>
 
 <div class="card">
@@ -74,10 +83,19 @@
         @endforelse
         </tbody>
     </table>
-    @if($recentPayouts->hasPages())
-        <div style="margin-top:12px; text-align:center; overflow-x: auto;">
-            {{ $recentPayouts->links() }}
-        </div>
-    @endif
+    <div style="margin-top: 12px; text-align: center; font-size: 12px;">
+        Page {{ $recentPayouts->currentPage() }} of {{ $recentPayouts->lastPage() }} 
+        @if($recentPayouts->onFirstPage())
+            <span style="color: #9ca3af;">← Prev</span>
+        @else
+            <a href="{{ $recentPayouts->previousPageUrl() }}" style="color: #2563eb; text-decoration: none;">← Prev</a>
+        @endif
+        | 
+        @if($recentPayouts->hasMorePages())
+            <a href="{{ $recentPayouts->nextPageUrl() }}" style="color: #2563eb; text-decoration: none;">Next →</a>
+        @else
+            <span style="color: #9ca3af;">Next →</span>
+        @endif
+    </div>
 </div>
 @endsection
