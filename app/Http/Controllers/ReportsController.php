@@ -14,6 +14,10 @@ class ReportsController extends Controller
         $monthStart = now()->startOfMonth()->toDateString();
         $monthEnd = now()->endOfMonth()->toDateString();
 
+        // Get date range from request
+        $fromDate = request('from_date', $monthStart);
+        $toDate = request('to_date', $today);
+
         $activeEmployees = Employee::active()->count();
         $leftEmployees = Employee::left()->count();
         $totalBalance = Employee::sum('current_balance');
@@ -28,15 +32,19 @@ class ReportsController extends Controller
         $monthPayout = Payout::whereBetween('paid_at', [$monthStart, $monthEnd])->sum('amount');
         $totalPayout = Payout::sum('amount');
 
+        // Date-wise filtered attendance
         $recentAttendance = AttendanceRecord::query()
             ->with('employee')
+            ->whereBetween('attendance_date', [$fromDate, $toDate])
             ->latest('attendance_date')
-            ->paginate(10);
+            ->paginate(20);
 
+        // Date-wise filtered payouts
         $recentPayouts = Payout::query()
             ->with('employee')
+            ->whereBetween('paid_at', [$fromDate, $toDate])
             ->latest('paid_at')
-            ->paginate(10);
+            ->paginate(20);
 
         return view('reports.index', [
             'today' => $today,
@@ -51,6 +59,8 @@ class ReportsController extends Controller
             'totalPayout' => $totalPayout,
             'recentAttendance' => $recentAttendance,
             'recentPayouts' => $recentPayouts,
+            'fromDate' => $fromDate,
+            'toDate' => $toDate,
         ]);
     }
 }

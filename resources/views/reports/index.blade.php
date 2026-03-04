@@ -4,6 +4,19 @@
 <div class="card">
     <h2>Reports</h2>
     <p class="muted">Date: {{ $today }} | Month: {{ $monthLabel }}</p>
+    
+    <form method="GET" action="{{ route('reports.index') }}" style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end;">
+        <div>
+            <label for="from_date" style="display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px;">From Date</label>
+            <input type="date" id="from_date" name="from_date" value="{{ $fromDate }}" style="padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+        </div>
+        <div>
+            <label for="to_date" style="display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px;">To Date</label>
+            <input type="date" id="to_date" name="to_date" value="{{ $toDate }}" style="padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+        </div>
+        <button type="submit" style="background: #2563eb; color: #fff; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer; font-size: 13px; font-weight: 600;">Filter</button>
+        <a href="{{ route('reports.index') }}" style="background: #6b7280; color: #fff; border: none; border-radius: 4px; padding: 6px 12px; text-decoration: none; display: inline-block; font-size: 13px; font-weight: 600;">Reset</a>
+    </form>
 </div>
 
 <div class="grid">
