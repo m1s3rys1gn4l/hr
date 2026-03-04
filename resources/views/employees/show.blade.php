@@ -24,19 +24,19 @@
 </div>
 
 <div class="card">
-    <form method="GET" action="{{ route('employees.show', $employee) }}" class="row">
-        <div>
-            <label for="from_datetime">From (Date & Time)</label>
-            <input type="datetime-local" id="from_datetime" name="from_datetime" value="{{ $fromDateTime }}">
+    <form method="GET" action="{{ route('employees.show', $employee) }}" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end;">
+        <div style="flex: 0 1 auto;">
+            <label for="from_datetime" style="display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px;">From</label>
+            <input type="datetime-local" id="from_datetime" name="from_datetime" value="{{ $fromDateTime }}" style="padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; width: 180px;">
         </div>
-        <div>
-            <label for="to_datetime">To (Date & Time)</label>
-            <input type="datetime-local" id="to_datetime" name="to_datetime" value="{{ $toDateTime }}">
+        <div style="flex: 0 1 auto;">
+            <label for="to_datetime" style="display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px;">To</label>
+            <input type="datetime-local" id="to_datetime" name="to_datetime" value="{{ $toDateTime }}" style="padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px; width: 180px;">
         </div>
-        <div style="display:flex; align-items:end; gap:8px;">
-            <button class="btn" type="submit">Apply Filter</button>
-            <a class="btn btn-secondary" href="{{ route('employees.show', $employee) }}">Reset</a>
-            <a class="btn" href="{{ route('employees.export-history', $employee, request()->query()) }}">Export Excel (.xlsx)</a>
+        <div style="display: flex; gap: 6px;">
+            <button class="btn" type="submit" style="padding: 7px 12px; font-size: 12px;">Apply</button>
+            <a class="btn btn-secondary" href="{{ route('employees.show', $employee) }}" style="padding: 7px 12px; font-size: 12px; text-decoration: none; display: inline-block;">Reset</a>
+            <a class="btn" href="{{ route('employees.export-history', $employee, request()->query()) }}" style="padding: 7px 12px; font-size: 12px; text-decoration: none; display: inline-block;">Export (.xlsx)</a>
         </div>
     </form>
 </div>

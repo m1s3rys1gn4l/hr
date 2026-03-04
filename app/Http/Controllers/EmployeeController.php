@@ -235,22 +235,31 @@ class EmployeeController extends Controller
         $writer->addRow(Row::fromValues(['Total Records:', count($payoutHistory)]));
         $writer->addRow(Row::fromValues([]));
 
-        $writer->addRow(Row::fromValues(['Paid At (Date & Time)', 'Amount (SAR)', 'Note']));
+        $writer->addRow(Row::fromValues(['Paid At (Date & Time)', 'Amount (SAR)', 'Balance After (SAR)', 'Note']));
 
         $totalPayoutAmount = 0;
+        
+        // Calculate starting balance and sort payouts oldest first for running balance
+        $startingBalance = (float) $employee->current_balance + $payoutHistory->sum('amount');
+        $sortedPayouts = $payoutHistory->sortBy('paid_at')->values();
+        $runningBalance = $startingBalance;
 
-        foreach ($payoutHistory as $payout) {
+        foreach ($sortedPayouts as $payout) {
             $totalPayoutAmount += (float) $payout->amount;
+            $runningBalance -= (float) $payout->amount;
 
             $writer->addRow(Row::fromValues([
                 optional($payout->paid_at)->format('Y-m-d H:i') ?: '-',
                 number_format((float) $payout->amount, 2, '.', ''),
+                number_format($runningBalance, 2, '.', ''),
                 (string) ($payout->note ?: ''),
             ]));
         }
 
         $writer->addRow(Row::fromValues([]));
-        $writer->addRow(Row::fromValues(['TOTAL PAYOUT:', number_format($totalPayoutAmount, 2) . ' SAR']));
+        $writer->addRow(Row::fromValues(['TOTAL PAYOUT:', number_format($totalPayoutAmount, 2) . ' SAR', '', '']));
+        $writer->addRow(Row::fromValues(['Starting Balance:', number_format($startingBalance, 2) . ' SAR', '', '']));
+        $writer->addRow(Row::fromValues(['Final Balance:', number_format((float) $employee->current_balance, 2) . ' SAR', '', '']));
 
         $writer->close();
 
