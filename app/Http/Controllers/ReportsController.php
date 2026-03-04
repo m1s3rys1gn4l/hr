@@ -26,18 +26,17 @@ class ReportsController extends Controller
 
         $todayPayout = Payout::whereDate('paid_at', $today)->sum('amount');
         $monthPayout = Payout::whereBetween('paid_at', [$monthStart, $monthEnd])->sum('amount');
+        $totalPayout = Payout::sum('amount');
 
         $recentAttendance = AttendanceRecord::query()
             ->with('employee')
             ->latest('attendance_date')
-            ->limit(10)
-            ->get();
+            ->paginate(10);
 
         $recentPayouts = Payout::query()
             ->with('employee')
             ->latest('paid_at')
-            ->limit(10)
-            ->get();
+            ->paginate(10);
 
         return view('reports.index', [
             'today' => $today,
@@ -49,6 +48,7 @@ class ReportsController extends Controller
             'monthAttendanceCredit' => $monthAttendanceCredit,
             'todayPayout' => $todayPayout,
             'monthPayout' => $monthPayout,
+            'totalPayout' => $totalPayout,
             'recentAttendance' => $recentAttendance,
             'recentPayouts' => $recentPayouts,
         ]);

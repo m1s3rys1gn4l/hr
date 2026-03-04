@@ -14,6 +14,7 @@
     <div class="card"><strong>This Month Attendance Credit:</strong><br>{{ number_format($monthAttendanceCredit, 2) }} SAR</div>
     <div class="card"><strong>Today's Payout:</strong><br>{{ number_format($todayPayout, 2) }} SAR</div>
     <div class="card"><strong>This Month Payout:</strong><br>{{ number_format($monthPayout, 2) }} SAR</div>
+    <div class="card"><strong>Total Payout (All Time):</strong><br>{{ number_format($totalPayout, 2) }} SAR</div>
 </div>
 
 <div class="card">
@@ -42,6 +43,11 @@
         @endforelse
         </tbody>
     </table>
+    @if($recentAttendance->hasPages())
+        <div style="margin-top:12px; text-align:center;">
+            {{ $recentAttendance->links() }}
+        </div>
+    @endif
 </div>
 
 <div class="card">
@@ -68,5 +74,10 @@
         @endforelse
         </tbody>
     </table>
+    @if($recentPayouts->hasPages())
+        <div style="margin-top:12px; text-align:center;">
+            {{ $recentPayouts->links() }}
+        </div>
+    @endif
 </div>
 @endsection
