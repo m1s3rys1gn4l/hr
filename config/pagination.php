@@ -12,10 +12,10 @@ return [
     | framework. However, you may change this to another view of your choice.
     |
     | Supported: "tailwind", "bootstrap-4", "bootstrap-5", "simple-bootstrap-4",
-    |            "simple-bootstrap-5", "simple-tailwind", "simple-default", "simple-custom"
+    |            "simple-bootstrap-5", "simple-tailwind", "simple-default"
     |
     */
 
-    'default' => 'simple-custom',
+    'default' => 'simple-bootstrap-5',
 
 ];

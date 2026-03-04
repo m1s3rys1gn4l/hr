@@ -25,10 +25,11 @@
         .error { color: #b91c1c; font-size: 13px; margin-top: 4px; }
         .pagination { display: inline-flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
         .pagination li { margin: 0; }
-        .pagination a, .pagination span { padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 4px; text-decoration: none; color: #2563eb; font-size: 13px; display: inline-block; }
-        .pagination a:hover { background: #f0f9ff; border-color: #2563eb; }
-        .pagination span.active { background: #2563eb; color: #fff; border-color: #2563eb; }
-        .pagination span.disabled { color: #9ca3af; cursor: not-allowed; border-color: #e5e7eb; }
+        .pagination .page-item { margin: 0; }
+        .pagination .page-link { padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 4px; text-decoration: none; color: #2563eb; font-size: 13px; display: inline-block; }
+        .pagination .page-link:hover { background: #f0f9ff; border-color: #2563eb; }
+        .pagination .page-item.active .page-link { background: #2563eb; color: #fff; border-color: #2563eb; }
+        .pagination .page-item.disabled .page-link { color: #9ca3af; cursor: not-allowed; border-color: #e5e7eb; }
     </style>
 </head>
 <body>
