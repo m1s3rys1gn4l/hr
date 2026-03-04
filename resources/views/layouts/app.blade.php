@@ -27,8 +27,8 @@
         .pagination li { margin: 0; }
         .pagination a, .pagination span { padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 4px; text-decoration: none; color: #2563eb; font-size: 13px; display: inline-block; }
         .pagination a:hover { background: #f0f9ff; border-color: #2563eb; }
-        .pagination .active span { background: #2563eb; color: #fff; border-color: #2563eb; }
-        .pagination .disabled span { color: #9ca3af; cursor: not-allowed; }
+        .pagination span.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+        .pagination span.disabled { color: #9ca3af; cursor: not-allowed; border-color: #e5e7eb; }
     </style>
 </head>
 <body>
