@@ -149,8 +149,6 @@ class EmployeeController extends Controller
             ->get();
 
         $payoutHistory = $employee->payouts()
-            ->when($fromDateTime, fn ($query) => $query->where('paid_at', '>=', $fromDateTime))
-            ->when($toDateTime, fn ($query) => $query->where('paid_at', '<=', $toDateTime))
             ->latest('paid_at')
             ->get();
 
