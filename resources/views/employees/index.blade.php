@@ -48,30 +48,43 @@
         </thead>
         <tbody>
         @forelse($activeEmployees as $employee)
-            <tr>
-                <td>{{ $employee->employee_code }}</td>
+            <tr data-employee-row="{{ $employee->id }}">
+                <td>
+                    <span class="employee-code-display">{{ $employee->employee_code }}</span>
+                    <input type="number" class="employee-code-edit" value="{{ $employee->employee_code }}" min="1" max="999" style="display:none; width:80px;">
+                </td>
                 <td>{{ $employee->name }}</td>
                 <td>{{ $employee->phone ?: '-' }}</td>
-                <td>{{ number_format($employee->daily_salary, 2) }} SAR</td>
+                <td>
+                    <span class="daily-salary-display">{{ number_format($employee->daily_salary, 2) }} SAR</span>
+                    <input type="number" class="daily-salary-edit" value="{{ $employee->daily_salary }}" min="0" step="0.01" style="display:none; width:100px;">
+                </td>
                 <td>{{ number_format($employee->current_balance, 2) }} SAR</td>
                 <td>
-                    <a class="btn btn-secondary" href="{{ route('employees.show', $employee) }}">Profile</a>
-                    <button
-                        type="button"
-                        class="btn"
-                        data-open-payout
-                        data-employee-id="{{ $employee->id }}"
-                        data-employee-name="{{ $employee->name }}"
-                        data-employee-code="{{ $employee->employee_code }}"
-                        data-employee-balance="{{ number_format((float) $employee->current_balance, 2, '.', '') }}"
-                    >
-                        Payout
-                    </button>
-                    <form action="{{ route('employees.mark-left', $employee) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('PATCH')
-                        <button class="btn btn-danger" type="submit">Set Left</button>
-                    </form>
+                    <div class="edit-employee-actions" style="display:none;">
+                        <button type="button" class="btn save-employee-btn" data-employee-id="{{ $employee->id }}">Save</button>
+                        <button type="button" class="btn btn-secondary cancel-employee-btn" data-employee-id="{{ $employee->id }}">Cancel</button>
+                    </div>
+                    <div class="view-employee-actions">
+                        <a class="btn btn-secondary" href="{{ route('employees.show', $employee) }}">Profile</a>
+                        <button
+                            type="button"
+                            class="btn"
+                            data-open-payout
+                            data-employee-id="{{ $employee->id }}"
+                            data-employee-name="{{ $employee->name }}"
+                            data-employee-code="{{ $employee->employee_code }}"
+                            data-employee-balance="{{ number_format((float) $employee->current_balance, 2, '.', '') }}"
+                        >
+                            Payout
+                        </button>
+                        <form action="{{ route('employees.mark-left', $employee) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('PATCH')
+                            <button class="btn btn-danger" type="submit">Set Left</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary edit-employee-btn" data-employee-id="{{ $employee->id }}">Edit</button>
+                    </div>
                 </td>
             </tr>
         @empty
@@ -218,6 +231,97 @@
                 noteInput.value = oldNote;
             }
         }
+    })();
+
+    // Inline employee editing
+    (function () {
+        const editButtons = document.querySelectorAll('.edit-employee-btn');
+        const saveButtons = document.querySelectorAll('.save-employee-btn');
+        const cancelButtons = document.querySelectorAll('.cancel-employee-btn');
+
+        editButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const employeeId = this.getAttribute('data-employee-id');
+                const row = document.querySelector(`tr[data-employee-row="${employeeId}"]`);
+                
+                // Hide display elements, show edit inputs
+                row.querySelector('.employee-code-display').style.display = 'none';
+                row.querySelector('.employee-code-edit').style.display = 'inline-block';
+                row.querySelector('.daily-salary-display').style.display = 'none';
+                row.querySelector('.daily-salary-edit').style.display = 'inline-block';
+                
+                // Hide edit button and view actions, show save/cancel
+                row.querySelector('.edit-employee-btn').style.display = 'none';
+                row.querySelector('.view-employee-actions').style.display = 'none';
+                row.querySelector('.edit-employee-actions').style.display = 'inline-block';
+            });
+        });
+
+        cancelButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const employeeId = this.getAttribute('data-employee-id');
+                const row = document.querySelector(`tr[data-employee-row="${employeeId}"]`);
+                
+                // Show display elements, hide edit inputs
+                row.querySelector('.employee-code-display').style.display = 'inline';
+                row.querySelector('.employee-code-edit').style.display = 'none';
+                row.querySelector('.daily-salary-display').style.display = 'inline';
+                row.querySelector('.daily-salary-edit').style.display = 'none';
+                
+                // Show edit button and view actions, hide save/cancel
+                row.querySelector('.edit-employee-btn').style.display = 'inline-block';
+                row.querySelector('.view-employee-actions').style.display = 'inline-block';
+                row.querySelector('.edit-employee-actions').style.display = 'none';
+                
+                // Reset input values to original
+                const originalCode = row.querySelector('.employee-code-display').textContent.trim();
+                const originalSalary = row.querySelector('.daily-salary-display').textContent.replace(' SAR', '').replace(',', '').trim();
+                row.querySelector('.employee-code-edit').value = originalCode;
+                row.querySelector('.daily-salary-edit').value = originalSalary;
+            });
+        });
+
+        saveButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const employeeId = this.getAttribute('data-employee-id');
+                const row = document.querySelector(`tr[data-employee-row="${employeeId}"]`);
+                
+                const employeeCode = row.querySelector('.employee-code-edit').value;
+                const dailySalary = row.querySelector('.daily-salary-edit').value;
+                
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/employees/${employeeId}`;
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = '{{ csrf_token() }}';
+                form.appendChild(csrfInput);
+                
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'PATCH';
+                form.appendChild(methodInput);
+                
+                const codeInput = document.createElement('input');
+                codeInput.type = 'hidden';
+                codeInput.name = 'employee_code';
+                codeInput.value = employeeCode;
+                form.appendChild(codeInput);
+                
+                const salaryInput = document.createElement('input');
+                salaryInput.type = 'hidden';
+                salaryInput.name = 'daily_salary';
+                salaryInput.value = dailySalary;
+                form.appendChild(salaryInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            });
+        });
     })();
 </script>
 @endsection

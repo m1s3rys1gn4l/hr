@@ -108,6 +108,27 @@ class EmployeeController extends Controller
         return redirect()->route('employees.index')->with('status', 'Employee created successfully.');
     }
 
+    public function update(Request $request, Employee $employee)
+    {
+        $validated = $request->validate([
+            'employee_code' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:999',
+                'unique:employees,employee_code,' . $employee->id . ',id,status,active',
+            ],
+            'daily_salary' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $employee->update([
+            'employee_code' => $validated['employee_code'],
+            'daily_salary' => $validated['daily_salary'],
+        ]);
+
+        return back()->with('status', 'Employee updated successfully.');
+    }
+
     public function show(Request $request, Employee $employee)
     {
         $fromDateTime = $this->parseDateTimeFilter($request->query('from_datetime'));
