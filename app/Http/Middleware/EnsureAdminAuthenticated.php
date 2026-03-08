@@ -16,6 +16,11 @@ class EnsureAdminAuthenticated
             return redirect()->route('login');
         }
 
+        if (! $user->is_active) {
+            auth()->logout();
+            return redirect()->route('login')->withErrors(['email' => 'Your account has been disabled.']);
+        }
+
         return $next($request);
     }
 }

@@ -14,6 +14,50 @@ class AdminUserController extends Controller
         ]);
     }
 
+    public function editProfile(Request $request)
+    {
+        return view('admin.edit-profile', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
+
+        if ($validated['password']) {
+            $user->update(['password' => $validated['password']]);
+        }
+
+        return redirect()
+            ->route('admin.profile')
+            ->with('status', 'Profile updated successfully.');
+    }
+
+    public function toggleUserStatus(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->withErrors(['error' => 'Cannot disable your own account.']);
+        }
+
+        $user->update(['is_active' => !$user->is_active]);
+
+        $status = $user->is_active ? 'enabled' : 'disabled';
+
+        return back()->with('status', "User {$status} successfully.");
+    }
+
     public function index()
     {
         $users = User::query()

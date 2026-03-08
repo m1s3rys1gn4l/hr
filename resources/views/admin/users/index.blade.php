@@ -17,7 +17,9 @@
                 <th>Email</th>
                 <th>Role</th>
                 <th>Permissions</th>
+                <th>Status</th>
                 <th>Created</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -39,11 +41,29 @@
                             {{ count($perms) ? implode(', ', $perms) : '-' }}
                         @endif
                     </td>
+                    <td>
+                        <span style="color: {{ $user->is_active ? 'green' : 'red' }};">
+                            {{ $user->is_active ? 'Active' : 'Disabled' }}
+                        </span>
+                    </td>
                     <td>{{ optional($user->created_at)->format('Y-m-d H:i') ?: '-' }}</td>
+                    <td>
+                        @if(auth()->id() !== $user->id)
+                            <form method="POST" action="{{ route('admin.users.toggle-status', $user) }}" style="display:inline;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn" style="background-color: {{ $user->is_active ? '#dc3545' : '#28a745' }}; padding: 4px 8px; font-size: 0.875rem;">
+                                    {{ $user->is_active ? 'Disable' : 'Enable' }}
+                                </button>
+                            </form>
+                        @else
+                            <span class="muted" style="font-size: 0.875rem;">Your Account</span>
+                        @endif
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5">No users found.</td>
+                    <td colspan="7">No users found.</td>
                 </tr>
             @endforelse
         </tbody>

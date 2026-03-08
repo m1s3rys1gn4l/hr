@@ -52,9 +52,13 @@ Route::middleware('admin.auth')->group(function () {
 
 	Route::middleware('admin.only')->group(function () {
 		Route::get('/admin/profile', [AdminUserController::class, 'profile'])->name('admin.profile');
+		Route::get('/admin/profile/edit', [AdminUserController::class, 'editProfile'])->name('admin.edit-profile');
+		Route::post('/admin/profile', [AdminUserController::class, 'updateProfile'])->name('admin.update-profile');
+
 		Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users.index');
 		Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('admin.users.create');
 		Route::post('/admin/users', [AdminUserController::class, 'store'])->name('admin.users.store');
+		Route::patch('/admin/users/{user}/toggle-status', [AdminUserController::class, 'toggleUserStatus'])->name('admin.users.toggle-status');
 
 		Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
 		Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');

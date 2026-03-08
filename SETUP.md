@@ -150,3 +150,17 @@ php artisan db:seed --class=AdminUserSeeder --force
 php artisan storage:link
 php artisan optimize
 chmod -R 775 storage bootstrap/cache
+
+
+My Recommendation
+For a fresh start with just the admin user:
+
+php artisan migrate:reset
+php artisan migrate
+php artisan db:seed --class=AdminUserSeeder
+
+Login credentials after this:
+
+Email: admin@hr.local
+Password: admin12345
+Then you can manually create/add employees as needed.
