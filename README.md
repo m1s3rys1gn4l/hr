@@ -10,11 +10,11 @@ This project is an admin-focused employee management system with salary tracking
   - Total salary balance
   - Today's payout total
 - Employee management:
-  - Create employee with required `name`, optional `phone`, and required `daily_salary`
-  - Auto-assign unique 3-digit ID (`001` to `999`), starting from the smallest available ID
+  - Create employee with required `employee_code` (1-999), `name`, optional `phone`, and required `daily_salary`
+  - Manually enter unique ID (1 to 999) during employee creation
   - Active and left employee lists
   - Inline action to set employee as left
-  - ID is released when employee leaves and reused for new employees
+  - ID is released when employee leaves and can be reused for new employees
 - Attendance salary processing:
   - Accept ID input formats: `1,2,3` and `1+2+3`
   - `Full Time` IDs: full daily salary

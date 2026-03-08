@@ -85,19 +85,20 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'employee_code' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:999',
+                'unique:employees,employee_code,NULL,id,status,active',
+            ],
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'daily_salary' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $code = Employee::allocateNextCode();
-
-        if ($code === null) {
-            return back()->withErrors(['name' => 'No employee ID is available (1-999).'])->withInput();
-        }
-
         Employee::create([
-            'employee_code' => $code,
+            'employee_code' => $validated['employee_code'],
             'name' => $validated['name'],
             'phone' => $validated['phone'] ?? null,
             'daily_salary' => $validated['daily_salary'],

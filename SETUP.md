@@ -2,7 +2,8 @@
 
 ## Prerequisites
 
-The system requires PHP with SQLite support. Follow these steps to get started:
+The system requires **PHP 8.2 or 8.3** with SQLite support. (PHP 8.4+ is not required.)
+Follow these steps to get started:
 
 ### Step 1: Enable SQLite Extension
 

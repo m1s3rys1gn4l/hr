@@ -3,11 +3,21 @@
 @section('content')
 <div class="card">
     <h2>Create Employee</h2>
-    <p class="muted">Unique employee ID is assigned automatically (3 digits from 001 to 999).</p>
+    <p class="muted">Enter a unique employee ID (1 to 999). IDs from left employees can be reused.</p>
 
     <form action="{{ route('employees.store') }}" method="POST">
         @csrf
         <div class="row">
+            <div>
+                <label>Employee ID (required)</label>
+                <input type="number" name="employee_code" value="{{ old('employee_code') }}" min="1" max="999" required>
+                @error('employee_code')
+                    <span class="error">{{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+
+        <div class="row" style="margin-top:12px;">
             <div>
                 <label>Name (required)</label>
                 <input type="text" name="name" value="{{ old('name') }}" required>
