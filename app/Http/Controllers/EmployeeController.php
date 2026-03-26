@@ -379,4 +379,19 @@ class EmployeeController extends Controller
 
         return redirect()->route('employees.left')->with('status', 'Employee reactivated successfully.');
     }
+
+    public function destroy(Employee $employee)
+    {
+        if ($employee->status !== 'left') {
+            return back()->withErrors(['status' => 'Only left employees can be deleted.']);
+        }
+
+        if (round((float) $employee->current_balance, 2) !== 0.0) {
+            return back()->withErrors(['status' => 'Only left employees with zero balance can be deleted.']);
+        }
+
+        $employee->delete();
+
+        return redirect()->route('employees.left')->with('status', 'Left employee deleted successfully.');
+    }
 }

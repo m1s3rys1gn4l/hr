@@ -28,6 +28,7 @@ Route::middleware('admin.auth')->group(function () {
 		Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
 		Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
 		Route::patch('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+		Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
 		Route::patch('/employees/{employee}/left', [EmployeeController::class, 'markLeft'])->name('employees.mark-left');
 		Route::patch('/employees/{employee}/reactivate', [EmployeeController::class, 'reactivate'])->name('employees.reactivate');
 	});

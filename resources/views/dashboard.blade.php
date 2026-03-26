@@ -10,7 +10,7 @@
 <div class="grid">
     <div class="card"><strong>Active Employees:</strong><br>{{ $activeCount }}</div>
     <div class="card"><strong>Left Employees:</strong><br>{{ $leftCount }}</div>
-    <div class="card"><strong>Total Salary Balance:</strong><br>{{ number_format($totalBalance, 2) }} SAR</div>
+    <div class="card"><strong>Remaining Salary Balance:</strong><br>{{ number_format($remainingBalance, 2) }} SAR</div>
     <div class="card"><strong>Today's Payout:</strong><br>{{ number_format($todayPayout, 2) }} SAR</div>
 </div>
 

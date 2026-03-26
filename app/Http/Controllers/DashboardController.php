@@ -11,7 +11,7 @@ class DashboardController extends Controller
     {
         $activeCount = Employee::active()->count();
         $leftCount = Employee::left()->count();
-        $totalBalance = Employee::sum('current_balance');
+        $remainingBalance = Employee::sum('current_balance');
         $todayPayout = Payout::whereDate('paid_at', now()->toDateString())->sum('amount');
         $recentEmployees = Employee::query()
             ->latest()
@@ -21,7 +21,7 @@ class DashboardController extends Controller
         return view('dashboard', [
             'activeCount' => $activeCount,
             'leftCount' => $leftCount,
-            'totalBalance' => $totalBalance,
+            'remainingBalance' => $remainingBalance,
             'todayPayout' => $todayPayout,
             'recentEmployees' => $recentEmployees,
         ]);

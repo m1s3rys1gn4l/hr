@@ -37,9 +37,10 @@
             <th>Previous ID</th>
             <th>Name</th>
             <th>Phone</th>
+            <th>Balance</th>
             <th>Left Date</th>
             <th>Re-Activate</th>
-            <th>Profile</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -48,6 +49,7 @@
                 <td>{{ $employee->released_employee_code ?: '-' }}</td>
                 <td>{{ $employee->name }}</td>
                 <td>{{ $employee->phone ?: '-' }}</td>
+                <td>{{ number_format($employee->current_balance, 2) }} SAR</td>
                 <td>{{ optional($employee->left_at)->format('Y-m-d H:i') ?: '-' }}</td>
                 <td>
                     <form action="{{ route('employees.reactivate', $employee) }}" method="POST" style="display:flex;gap:8px;align-items:center;">
@@ -60,10 +62,19 @@
                         <button class="btn" type="submit">Activate</button>
                     </form>
                 </td>
-                <td><a class="btn btn-secondary" href="{{ route('employees.show', $employee) }}">Profile</a></td>
+                <td style="display:flex;gap:8px;align-items:center;">
+                    <a class="btn btn-secondary" href="{{ route('employees.show', $employee) }}">Profile</a>
+                    @if(round((float) $employee->current_balance, 2) === 0.0)
+                        <form action="{{ route('employees.destroy', $employee) }}" method="POST" onsubmit="return confirm('Delete this left employee permanently?');" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-danger" type="submit">Delete</button>
+                        </form>
+                    @endif
+                </td>
             </tr>
         @empty
-            <tr><td colspan="6">No left employees.</td></tr>
+            <tr><td colspan="7">No left employees.</td></tr>
         @endforelse
         </tbody>
     </table>
