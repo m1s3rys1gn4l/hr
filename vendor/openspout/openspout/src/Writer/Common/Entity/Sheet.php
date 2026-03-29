@@ -6,7 +6,6 @@ namespace OpenSpout\Writer\Common\Entity;
 
 use OpenSpout\Writer\AutoFilter;
 use OpenSpout\Writer\Common\ColumnWidth;
-use OpenSpout\Writer\Common\ColumnWidthContainer;
 use OpenSpout\Writer\Common\Manager\SheetManager;
 use OpenSpout\Writer\Exception\InvalidSheetNameException;
 use OpenSpout\Writer\XLSX\Entity\SheetView;
@@ -41,7 +40,8 @@ final class Sheet
 
     private ?AutoFilter $autoFilter = null;
 
-    private ColumnWidthContainer $COLUMN_WIDTHS;
+    /** @var ColumnWidth[] Array of min-max-width arrays */
+    private array $COLUMN_WIDTHS = [];
 
     /** @var string rows to repeat at top */
     private ?string $printTitleRows = null;
@@ -63,8 +63,6 @@ final class Sheet
 
         $this->setName(self::DEFAULT_SHEET_NAME_PREFIX.($sheetIndex + 1));
         $this->setIsVisible(true);
-
-        $this->COLUMN_WIDTHS = new ColumnWidthContainer();
     }
 
     /**
@@ -202,17 +200,17 @@ final class Sheet
      */
     public function setColumnWidthForRange(float $width, int $start, int $end): void
     {
-        $this->COLUMN_WIDTHS->append(new ColumnWidth($start, $end, $width));
+        $this->COLUMN_WIDTHS[] = new ColumnWidth($start, $end, $width);
     }
 
     /**
      * @internal
      *
-     * @return list<ColumnWidth>
+     * @return ColumnWidth[]
      */
     public function getColumnWidths(): array
     {
-        return $this->COLUMN_WIDTHS->get();
+        return $this->COLUMN_WIDTHS;
     }
 
     public function getPrintTitleRows(): ?string

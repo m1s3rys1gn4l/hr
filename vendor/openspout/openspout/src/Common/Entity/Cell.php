@@ -13,61 +13,53 @@ use OpenSpout\Common\Entity\Cell\EmptyCell;
 use OpenSpout\Common\Entity\Cell\FormulaCell;
 use OpenSpout\Common\Entity\Cell\NumericCell;
 use OpenSpout\Common\Entity\Cell\StringCell;
-use OpenSpout\Common\Entity\Cell\TextRunCell;
 use OpenSpout\Common\Entity\Comment\Comment;
-use OpenSpout\Common\Entity\Comment\TextRun;
 use OpenSpout\Common\Entity\Style\Style;
 
-abstract readonly class Cell
+abstract class Cell
 {
-    public function __construct(
-        public ?Style $style = null,
-        public ?Comment $comment = null,
-    ) {}
+    public ?Comment $comment = null;
 
-    /**
-     * @return null|bool|DateInterval|DateTimeInterface|float|int|string|TextRun[]
-     */
-    abstract public function getValue(): array|bool|DateInterval|DateTimeInterface|float|int|string|null;
+    private Style $style;
 
-    abstract public function withStyle(Style $style): static;
+    public function __construct(?Style $style)
+    {
+        $this->setStyle($style);
+    }
 
-    abstract public function withoutStyle(): static;
+    abstract public function getValue(): null|bool|DateInterval|DateTimeInterface|float|int|string;
 
-    abstract public function withComment(Comment $comment): static;
+    final public function setStyle(?Style $style): void
+    {
+        $this->style = $style ?? new Style();
+    }
 
-    abstract public function withoutComment(): static;
+    final public function getStyle(): Style
+    {
+        return $this->style;
+    }
 
-    /**
-     * @param null|bool|DateInterval|DateTimeInterface|float|int|string|TextRun[] $value
-     */
-    final public static function fromValue(
-        array|bool|DateInterval|DateTimeInterface|float|int|string|null $value,
-        ?Style $style = null,
-        ?Comment $comment = null,
-    ): self {
-        if (\is_array($value)) {
-            return new TextRunCell($value, $style, $comment);
-        }
+    final public static function fromValue(null|bool|DateInterval|DateTimeInterface|float|int|string $value, ?Style $style = null): self
+    {
         if (\is_bool($value)) {
-            return new BooleanCell($value, $style, $comment);
+            return new BooleanCell($value, $style);
         }
         if (null === $value || '' === $value) {
-            return new EmptyCell($value, $style, $comment);
+            return new EmptyCell($value, $style);
         }
         if (\is_int($value) || \is_float($value)) {
-            return new NumericCell($value, $style, $comment);
+            return new NumericCell($value, $style);
         }
         if ($value instanceof DateTimeInterface) {
-            return new DateTimeCell($value, $style, $comment);
+            return new DateTimeCell($value, $style);
         }
         if ($value instanceof DateInterval) {
-            return new DateIntervalCell($value, $style, $comment);
+            return new DateIntervalCell($value, $style);
         }
         if (isset($value[0]) && '=' === $value[0]) {
-            return new FormulaCell($value, null, $style, $comment);
+            return new FormulaCell($value, $style, null);
         }
 
-        return new StringCell($value, $style, $comment);
+        return new StringCell($value, $style);
     }
 }

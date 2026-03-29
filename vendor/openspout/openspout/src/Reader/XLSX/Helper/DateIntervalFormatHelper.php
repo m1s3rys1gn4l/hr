@@ -6,12 +6,12 @@ namespace OpenSpout\Reader\XLSX\Helper;
 
 use DateInterval;
 
-final readonly class DateIntervalFormatHelper
+final class DateIntervalFormatHelper
 {
     /**
      * @see https://www.php.net/manual/en/dateinterval.format.php.
      */
-    private const array dateIntervalFormats = [
+    private const dateIntervalFormats = [
         'hh' => '%H',
         'h' => '%h',
         'mm' => '%I',

@@ -7,88 +7,19 @@ namespace OpenSpout\Common\Helper\Escaper;
 /**
  * @internal
  */
-final readonly class XLSX implements EscaperInterface
+final class XLSX implements EscaperInterface
 {
-    /**
-     * Regex pattern to detect control characters that need to be escaped.
-     */
-    private const string escapableControlCharactersPattern
-        = '[\x00-\x08'
-        // skipping "\t" (0x9) and "\n" (0xA)
-        .'\x0B-\x0C'
-        // skipping "\r" (0xD)
-        .'\x0E-\x1F]'
-    ;
+    /** @var bool Whether the escaper has already been initialized */
+    private bool $isAlreadyInitialized = false;
 
-    /**
-     * Map containing control characters to be escaped (key) and their escaped value (value).
-     */
-    private const array controlCharactersEscapingMap = [
-        '_x0000_' => "\x00",
-        '_x0001_' => "\x01",
-        '_x0002_' => "\x02",
-        '_x0003_' => "\x03",
-        '_x0004_' => "\x04",
-        '_x0005_' => "\x05",
-        '_x0006_' => "\x06",
-        '_x0007_' => "\x07",
-        '_x0008_' => "\x08",
-        '_x000B_' => "\x0B",
-        '_x000C_' => "\x0C",
-        '_x000E_' => "\x0E",
-        '_x000F_' => "\x0F",
-        '_x0010_' => "\x10",
-        '_x0011_' => "\x11",
-        '_x0012_' => "\x12",
-        '_x0013_' => "\x13",
-        '_x0014_' => "\x14",
-        '_x0015_' => "\x15",
-        '_x0016_' => "\x16",
-        '_x0017_' => "\x17",
-        '_x0018_' => "\x18",
-        '_x0019_' => "\x19",
-        '_x001A_' => "\x1A",
-        '_x001B_' => "\x1B",
-        '_x001C_' => "\x1C",
-        '_x001D_' => "\x1D",
-        '_x001E_' => "\x1E",
-        '_x001F_' => "\x1F",
-    ];
+    /** @var string Regex pattern to detect control characters that need to be escaped */
+    private string $escapableControlCharactersPattern;
 
-    /**
-     * Map containing control characters to be escaped (value) and their escaped value (key).
-     */
-    private const array controlCharactersEscapingReverseMap = [
-        "\x00" => '_x0000_',
-        "\x01" => '_x0001_',
-        "\x02" => '_x0002_',
-        "\x03" => '_x0003_',
-        "\x04" => '_x0004_',
-        "\x05" => '_x0005_',
-        "\x06" => '_x0006_',
-        "\x07" => '_x0007_',
-        "\x08" => '_x0008_',
-        "\x0B" => '_x000B_',
-        "\x0C" => '_x000C_',
-        "\x0E" => '_x000E_',
-        "\x0F" => '_x000F_',
-        "\x10" => '_x0010_',
-        "\x11" => '_x0011_',
-        "\x12" => '_x0012_',
-        "\x13" => '_x0013_',
-        "\x14" => '_x0014_',
-        "\x15" => '_x0015_',
-        "\x16" => '_x0016_',
-        "\x17" => '_x0017_',
-        "\x18" => '_x0018_',
-        "\x19" => '_x0019_',
-        "\x1A" => '_x001A_',
-        "\x1B" => '_x001B_',
-        "\x1C" => '_x001C_',
-        "\x1D" => '_x001D_',
-        "\x1E" => '_x001E_',
-        "\x1F" => '_x001F_',
-    ];
+    /** @var string[] Map containing control characters to be escaped (key) and their escaped value (value) */
+    private array $controlCharactersEscapingMap;
+
+    /** @var string[] Map containing control characters to be escaped (value) and their escaped value (key) */
+    private array $controlCharactersEscapingReverseMap;
 
     /**
      * Escapes the given string to make it compatible with XLSX.
@@ -99,6 +30,8 @@ final readonly class XLSX implements EscaperInterface
      */
     public function escape(string $string): string
     {
+        $this->initIfNeeded();
+
         $escapedString = $this->escapeControlCharacters($string);
 
         // @NOTE: Using ENT_QUOTES as XML entities ('<', '>', '&') as well as
@@ -115,16 +48,46 @@ final readonly class XLSX implements EscaperInterface
      */
     public function unescape(string $string): string
     {
+        $this->initIfNeeded();
+
         // ==============
         // =   WARNING  =
         // ==============
         // It is assumed that the given string has already had its XML entities decoded.
         // This is true if the string is coming from a DOMNode (as DOMNode already decode XML entities on creation).
-        // Therefore, there is no need to call "htmlspecialchars_decode()".
+        // Therefore there is no need to call "htmlspecialchars_decode()".
         return $this->unescapeControlCharacters($string);
     }
 
-    /*
+    /**
+     * Initializes the control characters if not already done.
+     */
+    private function initIfNeeded(): void
+    {
+        if (!$this->isAlreadyInitialized) {
+            $this->escapableControlCharactersPattern = $this->getEscapableControlCharactersPattern();
+            $this->controlCharactersEscapingMap = $this->getControlCharactersEscapingMap();
+            $this->controlCharactersEscapingReverseMap = array_flip($this->controlCharactersEscapingMap);
+
+            $this->isAlreadyInitialized = true;
+        }
+    }
+
+    /**
+     * @return string Regex pattern containing all escapable control characters
+     */
+    private function getEscapableControlCharactersPattern(): string
+    {
+        // control characters values are from 0 to 1F (hex values) in the ASCII table
+        // some characters should not be escaped though: "\t", "\r" and "\n".
+        return '[\x00-\x08'.
+                // skipping "\t" (0x9) and "\n" (0xA)
+                '\x0B-\x0C'.
+                // skipping "\r" (0xD)
+                '\x0E-\x1F]';
+    }
+
+    /**
      * Builds the map containing control characters to be escaped
      * mapped to their escaped values.
      * "\t", "\r" and "\n" don't need to be escaped.
@@ -135,7 +98,6 @@ final readonly class XLSX implements EscaperInterface
      *
      * @return string[]
      */
-    /*
     private function getControlCharactersEscapingMap(): array
     {
         $controlCharactersEscapingMap = [];
@@ -152,7 +114,6 @@ final readonly class XLSX implements EscaperInterface
 
         return $controlCharactersEscapingMap;
     }
-    */
 
     /**
      * Converts PHP control characters from the given string to OpenXML escaped control characters.
@@ -172,12 +133,12 @@ final readonly class XLSX implements EscaperInterface
         $escapedString = $this->escapeEscapeCharacter($string);
 
         // if no control characters
-        if (1 !== preg_match('/'.self::escapableControlCharactersPattern.'/', $escapedString)) {
+        if (1 !== preg_match("/{$this->escapableControlCharactersPattern}/", $escapedString)) {
             return $escapedString;
         }
 
-        return preg_replace_callback('/('.self::escapableControlCharactersPattern.')/', static function ($matches): string {
-            return self::controlCharactersEscapingReverseMap[$matches[0]];
+        return preg_replace_callback("/({$this->escapableControlCharactersPattern})/", function ($matches) {
+            return $this->controlCharactersEscapingReverseMap[$matches[0]];
         }, $escapedString);
     }
 
@@ -210,7 +171,7 @@ final readonly class XLSX implements EscaperInterface
     {
         $unescapedString = $string;
 
-        foreach (self::controlCharactersEscapingMap as $escapedCharValue => $charValue) {
+        foreach ($this->controlCharactersEscapingMap as $escapedCharValue => $charValue) {
             // only unescape characters that don't contain the escaped escape character for now
             $unescapedString = preg_replace("/(?<!_x005F)({$escapedCharValue})/", $charValue, $unescapedString);
         }

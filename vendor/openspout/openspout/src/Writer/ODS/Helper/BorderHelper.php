@@ -6,8 +6,6 @@ namespace OpenSpout\Writer\ODS\Helper;
 
 use OpenSpout\Common\Entity\Style\Border;
 use OpenSpout\Common\Entity\Style\BorderPart;
-use OpenSpout\Common\Entity\Style\BorderStyle;
-use OpenSpout\Common\Entity\Style\BorderWidth;
 
 /**
  * The fo:border, fo:border-top, fo:border-bottom, fo:border-left and fo:border-right attributes
@@ -23,34 +21,40 @@ use OpenSpout\Common\Entity\Style\BorderWidth;
  *
  * @internal
  */
-final readonly class BorderHelper
+final class BorderHelper
 {
-    public const array widthMap = [
-        BorderWidth::THIN->name => '0.75pt',
-        BorderWidth::MEDIUM->name => '1.75pt',
-        BorderWidth::THICK->name => '2.5pt',
+    /**
+     * Width mappings.
+     */
+    public const widthMap = [
+        Border::WIDTH_THIN => '0.75pt',
+        Border::WIDTH_MEDIUM => '1.75pt',
+        Border::WIDTH_THICK => '2.5pt',
     ];
 
-    public const array styleMap = [
-        BorderStyle::SOLID->name => 'solid',
-        BorderStyle::DASHED->name => 'dashed',
-        BorderStyle::DOTTED->name => 'dotted',
-        BorderStyle::DOUBLE->name => 'double',
+    /**
+     * Style mapping.
+     */
+    public const styleMap = [
+        Border::STYLE_SOLID => 'solid',
+        Border::STYLE_DASHED => 'dashed',
+        Border::STYLE_DOTTED => 'dotted',
+        Border::STYLE_DOUBLE => 'double',
     ];
 
     public static function serializeBorderPart(BorderPart $borderPart): string
     {
         $definition = 'fo:border-%s="%s"';
 
-        if (BorderStyle::NONE === $borderPart->style) {
-            $borderPartDefinition = \sprintf($definition, $borderPart->name->value, 'none');
+        if (Border::STYLE_NONE === $borderPart->getStyle()) {
+            $borderPartDefinition = \sprintf($definition, $borderPart->getName(), 'none');
         } else {
             $attributes = [
-                self::widthMap[$borderPart->width->name],
-                self::styleMap[$borderPart->style->name],
-                '#'.$borderPart->color,
+                self::widthMap[$borderPart->getWidth()],
+                self::styleMap[$borderPart->getStyle()],
+                '#'.$borderPart->getColor(),
             ];
-            $borderPartDefinition = \sprintf($definition, $borderPart->name->value, implode(' ', $attributes));
+            $borderPartDefinition = \sprintf($definition, $borderPart->getName(), implode(' ', $attributes));
         }
 
         return $borderPartDefinition;

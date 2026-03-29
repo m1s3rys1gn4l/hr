@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenSpout\Writer\Common\Manager\Style;
 
+use OpenSpout\Common\Entity\Cell;
 use OpenSpout\Common\Entity\Style\Style;
 
 /**
@@ -17,7 +18,15 @@ interface StyleManagerInterface
      *
      * @param Style $style The style to be registered
      *
-     * @return non-negative-int
+     * @return Style the registered style, updated with an internal ID
      */
-    public function registerStyle(Style $style): int;
+    public function registerStyle(Style $style): Style;
+
+    /**
+     * Apply additional styles if the given row needs it.
+     * Typically, set "wrap text" if a cell contains a new line.
+     *
+     * @return PossiblyUpdatedStyle The eventually updated style
+     */
+    public function applyExtraStylesIfNeeded(Cell $cell): PossiblyUpdatedStyle;
 }

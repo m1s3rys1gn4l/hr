@@ -10,17 +10,20 @@ use OpenSpout\Common\Entity\Row;
 /**
  * @internal
  */
-final readonly class RowManager
+final class RowManager
 {
-    public function fillMissingIndexesWithEmptyCells(Row $row): Row
+    /**
+     * Fills the missing indexes of a row with empty cells.
+     */
+    public function fillMissingIndexesWithEmptyCells(Row $row): void
     {
         $numCells = $row->getNumCells();
 
         if (0 === $numCells) {
-            return $row;
+            return;
         }
 
-        $rowCells = $row->cells;
+        $rowCells = $row->getCells();
         $maxCellIndex = $numCells;
 
         /**
@@ -34,15 +37,15 @@ final readonly class RowManager
 
         for ($cellIndex = 0; $cellIndex < $maxCellIndex; ++$cellIndex) {
             if (!isset($rowCells[$cellIndex])) {
-                $rowCells[$cellIndex] = Cell::fromValue('');
+                $row->setCellAtIndex(Cell::fromValue(''), $cellIndex);
                 $needsSorting = true;
             }
         }
 
         if ($needsSorting) {
+            $rowCells = $row->getCells();
             ksort($rowCells);
+            $row->setCells($rowCells);
         }
-
-        return new Row($rowCells, $row->height);
     }
 }

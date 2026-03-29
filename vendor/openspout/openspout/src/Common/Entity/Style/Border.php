@@ -4,56 +4,43 @@ declare(strict_types=1);
 
 namespace OpenSpout\Common\Entity\Style;
 
-final readonly class Border
+final class Border
 {
-    /** @var array<non-empty-string, BorderPart> */
-    private array $parts;
+    public const LEFT = 'left';
+    public const RIGHT = 'right';
+    public const TOP = 'top';
+    public const BOTTOM = 'bottom';
+
+    public const STYLE_NONE = 'none';
+    public const STYLE_SOLID = 'solid';
+    public const STYLE_DASHED = 'dashed';
+    public const STYLE_DOTTED = 'dotted';
+    public const STYLE_DOUBLE = 'double';
+
+    public const WIDTH_THIN = 'thin';
+    public const WIDTH_MEDIUM = 'medium';
+    public const WIDTH_THICK = 'thick';
+
+    /** @var array<string, BorderPart> */
+    private array $parts = [];
 
     public function __construct(BorderPart ...$borderParts)
     {
-        $parts = [];
         foreach ($borderParts as $borderPart) {
-            $parts[$borderPart->name->value] = $borderPart;
+            $this->parts[$borderPart->getName()] = $borderPart;
         }
-        $this->parts = $parts;
     }
 
-    public function getPart(BorderName $name): ?BorderPart
+    public function getPart(string $name): ?BorderPart
     {
-        return $this->parts[$name->value] ?? null;
+        return $this->parts[$name] ?? null;
     }
 
     /**
-     * @return array<non-empty-string, BorderPart>
+     * @return array<string, BorderPart>
      */
     public function getParts(): array
     {
         return $this->parts;
-    }
-
-    public function withBorderPart(BorderPart $borderPart): self
-    {
-        $parts = $this->parts;
-        $parts[$borderPart->name->value] = $borderPart;
-
-        return new self(...array_values($parts));
-    }
-
-    public function withoutBorder(BorderName $name): self
-    {
-        $parts = $this->parts;
-        unset($parts[$name->value]);
-
-        return new self(...array_values($parts));
-    }
-
-    public function withBorderParts(BorderPart ...$borderParts): self
-    {
-        $parts = $this->parts;
-        foreach ($borderParts as $borderPart) {
-            $parts[$borderPart->name->value] = $borderPart;
-        }
-
-        return new self(...array_values($parts));
     }
 }

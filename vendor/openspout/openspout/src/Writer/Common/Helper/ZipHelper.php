@@ -12,15 +12,15 @@ use ZipArchive;
 /**
  * @internal
  */
-final readonly class ZipHelper
+final class ZipHelper
 {
-    public const string ZIP_EXTENSION = '.zip';
+    public const ZIP_EXTENSION = '.zip';
 
     /**
      * Controls what to do when trying to add an existing file.
      */
-    public const string EXISTING_FILES_SKIP = 'skip';
-    public const string EXISTING_FILES_OVERWRITE = 'overwrite';
+    public const EXISTING_FILES_SKIP = 'skip';
+    public const EXISTING_FILES_OVERWRITE = 'overwrite';
 
     /**
      * Returns a new ZipArchive instance pointing at the given path.

@@ -67,7 +67,7 @@ final class Writer extends AbstractWriter
             }
 
             return (string) $value->getValue();
-        }, $row->cells);
+        }, $row->getCells());
 
         $wasWriteSuccessful = fputcsv(
             $this->filePointer,

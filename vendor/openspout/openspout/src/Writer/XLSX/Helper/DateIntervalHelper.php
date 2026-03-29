@@ -9,7 +9,7 @@ use DateInterval;
 /**
  * @internal
  */
-final readonly class DateIntervalHelper
+final class DateIntervalHelper
 {
     /**
      * Excel stores time durations as fractions of days:

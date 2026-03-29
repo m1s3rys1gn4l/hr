@@ -14,6 +14,7 @@ use OpenSpout\Writer\Common\Entity\Workbook;
 use OpenSpout\Writer\Common\Entity\Worksheet;
 use OpenSpout\Writer\Common\Helper\FileSystemWithRootFolderHelperInterface;
 use OpenSpout\Writer\Common\Manager\Style\StyleManagerInterface;
+use OpenSpout\Writer\Common\Manager\Style\StyleMerger;
 use OpenSpout\Writer\Exception\SheetNotFoundException;
 
 /**
@@ -34,6 +35,9 @@ abstract class AbstractWorkbookManager implements WorkbookManagerInterface
     /** @var Workbook The workbook to manage */
     private readonly Workbook $workbook;
 
+    /** @var StyleMerger Helper to merge styles */
+    private readonly StyleMerger $styleMerger;
+
     /** @var Worksheet The worksheet where data will be written to */
     private Worksheet $currentWorksheet;
 
@@ -42,12 +46,14 @@ abstract class AbstractWorkbookManager implements WorkbookManagerInterface
         AbstractOptions $options,
         WorksheetManagerInterface $worksheetManager,
         StyleManagerInterface $styleManager,
+        StyleMerger $styleMerger,
         FileSystemWithRootFolderHelperInterface $fileSystemHelper
     ) {
         $this->workbook = $workbook;
         $this->options = $options;
         $this->worksheetManager = $worksheetManager;
         $this->styleManager = $styleManager;
+        $this->styleMerger = $styleMerger;
         $this->fileSystemHelper = $fileSystemHelper;
     }
 
@@ -252,12 +258,22 @@ abstract class AbstractWorkbookManager implements WorkbookManagerInterface
      */
     private function addRowToWorksheet(Worksheet $worksheet, Row $row): void
     {
+        $this->applyDefaultRowStyle($row);
         $this->worksheetManager->addRow($worksheet, $row);
 
         // update max num columns for the worksheet
         $currentMaxNumColumns = $worksheet->getMaxNumColumns();
         $cellsCount = $row->getNumCells();
         $worksheet->setMaxNumColumns(max($currentMaxNumColumns, $cellsCount));
+    }
+
+    private function applyDefaultRowStyle(Row $row): void
+    {
+        $mergedStyle = $this->styleMerger->merge(
+            $row->getStyle(),
+            $this->options->DEFAULT_ROW_STYLE
+        );
+        $row->setStyle($mergedStyle);
     }
 
     /**

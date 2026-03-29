@@ -20,9 +20,9 @@ use OpenSpout\Writer\ODS\Helper\BorderHelper;
  *
  * @property StyleRegistry $styleRegistry
  */
-final readonly class StyleManager extends CommonStyleManager
+final class StyleManager extends CommonStyleManager
 {
-    private AbstractOptions $options;
+    private readonly AbstractOptions $options;
 
     public function __construct(StyleRegistry $styleRegistry, AbstractOptions $options)
     {
@@ -77,8 +77,8 @@ final readonly class StyleManager extends CommonStyleManager
     {
         $content = '<office:automatic-styles>';
 
-        foreach ($this->styleRegistry->getRegisteredStyles() as $styleId => $style) {
-            $content .= $this->getStyleSectionContent($styleId, $style);
+        foreach ($this->styleRegistry->getRegisteredStyles() as $style) {
+            $content .= $this->getStyleSectionContent($style);
         }
 
         $useOptimalRowHeight = null === $this->options->DEFAULT_ROW_HEIGHT ? 'true' : 'false';
@@ -170,9 +170,9 @@ final readonly class StyleManager extends CommonStyleManager
                 </number:number-style>
                 <style:style style:data-style-name="N0" style:family="table-cell" style:name="Default">
                     <style:table-cell-properties fo:background-color="transparent" style:vertical-align="automatic"/>
-                    <style:text-properties fo:color="#{$defaultStyle->fontColor}"
-                                           fo:font-size="{$defaultStyle->fontSize}pt" style:font-size-asian="{$defaultStyle->fontSize}pt" style:font-size-complex="{$defaultStyle->fontSize}pt"
-                                           style:font-name="{$defaultStyle->fontName}" style:font-name-asian="{$defaultStyle->fontName}" style:font-name-complex="{$defaultStyle->fontName}"/>
+                    <style:text-properties fo:color="#{$defaultStyle->getFontColor()}"
+                                           fo:font-size="{$defaultStyle->getFontSize()}pt" style:font-size-asian="{$defaultStyle->getFontSize()}pt" style:font-size-complex="{$defaultStyle->getFontSize()}pt"
+                                           style:font-name="{$defaultStyle->getFontName()}" style:font-name-asian="{$defaultStyle->getFontName()}" style:font-name-complex="{$defaultStyle->getFontName()}"/>
                 </style:style>
             </office:styles>
             EOD;
@@ -244,9 +244,9 @@ final readonly class StyleManager extends CommonStyleManager
     /**
      * Returns the contents of the "<style:style>" section, inside "<office:automatic-styles>" section.
      */
-    private function getStyleSectionContent(int $styleId, Style $style): string
+    private function getStyleSectionContent(Style $style): string
     {
-        $styleIndex = $styleId + 1; // 1-based
+        $styleIndex = $style->getId() + 1; // 1-based
 
         $content = '<style:style style:data-style-name="N0" style:family="table-cell" style:name="ce'.$styleIndex.'" style:parent-style-name="Default">';
 
@@ -264,7 +264,7 @@ final readonly class StyleManager extends CommonStyleManager
      */
     private function getTextPropertiesSectionContent(Style $style): string
     {
-        if (!$style->shouldApplyFont) {
+        if (!$style->shouldApplyFont()) {
             return '';
         }
 
@@ -281,31 +281,31 @@ final readonly class StyleManager extends CommonStyleManager
         $defaultStyle = $this->getDefaultStyle();
         $content = '';
 
-        $fontColor = $style->fontColor;
-        if ($fontColor !== $defaultStyle->fontColor) {
+        $fontColor = $style->getFontColor();
+        if ($fontColor !== $defaultStyle->getFontColor()) {
             $content .= ' fo:color="#'.$fontColor.'"';
         }
 
-        $fontName = $style->fontName;
-        if ($fontName !== $defaultStyle->fontName) {
+        $fontName = $style->getFontName();
+        if ($fontName !== $defaultStyle->getFontName()) {
             $content .= ' style:font-name="'.$fontName.'" style:font-name-asian="'.$fontName.'" style:font-name-complex="'.$fontName.'"';
         }
 
-        $fontSize = $style->fontSize;
-        if ($fontSize !== $defaultStyle->fontSize) {
+        $fontSize = $style->getFontSize();
+        if ($fontSize !== $defaultStyle->getFontSize()) {
             $content .= ' fo:font-size="'.$fontSize.'pt" style:font-size-asian="'.$fontSize.'pt" style:font-size-complex="'.$fontSize.'pt"';
         }
 
-        if ($style->fontBold) {
+        if ($style->isFontBold()) {
             $content .= ' fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold"';
         }
-        if ($style->fontItalic) {
+        if ($style->isFontItalic()) {
             $content .= ' fo:font-style="italic" style:font-style-asian="italic" style:font-style-complex="italic"';
         }
-        if ($style->fontUnderline) {
+        if ($style->isFontUnderline()) {
             $content .= ' style:text-underline-style="solid" style:text-underline-type="single"';
         }
-        if ($style->fontStrikethrough) {
+        if ($style->isFontStrikethrough()) {
             $content .= ' style:text-line-through-style="solid"';
         }
 
@@ -317,10 +317,7 @@ final readonly class StyleManager extends CommonStyleManager
      */
     private function getParagraphPropertiesSectionContent(Style $style): string
     {
-        if (
-            null === $style->cellAlignment
-            && null === $style->cellVerticalAlignment
-        ) {
+        if (!$style->shouldApplyCellAlignment() && !$style->shouldApplyCellVerticalAlignment()) {
             return '';
         }
 
@@ -335,13 +332,13 @@ final readonly class StyleManager extends CommonStyleManager
      */
     private function getCellAlignmentSectionContent(Style $style): string
     {
-        if (null === $style->cellAlignment) {
+        if (!$style->hasSetCellAlignment()) {
             return '';
         }
 
         return \sprintf(
             ' fo:text-align="%s" ',
-            $this->transformCellAlignment($style->cellAlignment)
+            $this->transformCellAlignment($style->getCellAlignment())
         );
     }
 
@@ -350,13 +347,13 @@ final readonly class StyleManager extends CommonStyleManager
      */
     private function getCellVerticalAlignmentSectionContent(Style $style): string
     {
-        if (null === $style->cellVerticalAlignment) {
+        if (!$style->hasSetCellVerticalAlignment()) {
             return '';
         }
 
         return \sprintf(
             ' fo:vertical-align="%s" ',
-            $this->transformCellVerticalAlignment($style->cellVerticalAlignment)
+            $this->transformCellVerticalAlignment($style->getCellVerticalAlignment())
         );
     }
 
@@ -365,12 +362,12 @@ final readonly class StyleManager extends CommonStyleManager
      * respectively as "start" and "end", using the recommended values increase compatibility
      * with software that will read the created ODS file.
      */
-    private function transformCellAlignment(CellAlignment $cellAlignment): string
+    private function transformCellAlignment(string $cellAlignment): string
     {
         return match ($cellAlignment) {
             CellAlignment::LEFT => 'start',
             CellAlignment::RIGHT => 'end',
-            default => $cellAlignment->value,
+            default => $cellAlignment,
         };
     }
 
@@ -378,11 +375,11 @@ final readonly class StyleManager extends CommonStyleManager
      * Spec uses 'middle' rather than 'center'
      * http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html#__RefHeading__1420236_253892949.
      */
-    private function transformCellVerticalAlignment(CellVerticalAlignment $cellVerticalAlignment): string
+    private function transformCellVerticalAlignment(string $cellVerticalAlignment): string
     {
         return (CellVerticalAlignment::CENTER === $cellVerticalAlignment)
             ? 'middle'
-            : $cellVerticalAlignment->value;
+            : $cellVerticalAlignment;
     }
 
     /**
@@ -392,15 +389,15 @@ final readonly class StyleManager extends CommonStyleManager
     {
         $content = '<style:table-cell-properties ';
 
-        if (null !== $style->shouldWrapText) {
-            $content .= $this->getWrapTextXMLContent($style->shouldWrapText);
+        if ($style->hasSetWrapText()) {
+            $content .= $this->getWrapTextXMLContent($style->shouldWrapText());
         }
 
-        if (null !== ($border = $style->border)) {
+        if (null !== ($border = $style->getBorder())) {
             $content .= $this->getBorderXMLContent($border);
         }
 
-        if (null !== ($bgColor = $style->backgroundColor)) {
+        if (null !== ($bgColor = $style->getBackgroundColor())) {
             $content .= $this->getBackgroundColorXMLContent($bgColor);
         }
 
