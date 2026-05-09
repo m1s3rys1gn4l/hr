@@ -9,6 +9,7 @@
         <div><strong>Name:</strong> {{ $employee->name }}</div>
         <div><strong>Phone:</strong> {{ $employee->phone ?: '-' }}</div>
         <div><strong>Status:</strong> {{ ucfirst($employee->status) }}</div>
+        <div><strong>Total Attendance:</strong> {{ $employee->attendance_records_count ?? 0 }}</div>
         <div><strong>Daily Salary:</strong> {{ number_format($employee->daily_salary, 2) }} SAR</div>
         <div><strong>Current Balance:</strong> {{ number_format($employee->current_balance, 2) }} SAR</div>
         <div><strong>Last Payout:</strong> {{ optional($employee->payouts()->latest('paid_at')->first()?->paid_at)->format('Y-m-d H:i') ?: '-' }}</div>

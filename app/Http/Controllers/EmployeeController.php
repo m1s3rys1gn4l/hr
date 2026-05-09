@@ -131,6 +131,8 @@ class EmployeeController extends Controller
 
     public function show(Request $request, Employee $employee)
     {
+        $employee->loadCount('attendanceRecords');
+
         $fromDateTime = $this->parseDateTimeFilter($request->query('from_datetime'));
         $toDateTime = $this->parseDateTimeFilter($request->query('to_datetime'));
 
