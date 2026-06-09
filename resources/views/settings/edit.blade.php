@@ -26,5 +26,30 @@
             <button class="btn" type="submit">Save Settings</button>
         </div>
     </form>
+
+    <hr style="margin: 18px 0; border: 0; border-top: 1px solid #ddd;">
+
+    <h3 style="margin:0;">Database Cleaner</h3>
+    <p class="muted" style="margin-top:8px;">
+        This will remove all data except users and employees. Employee balances will be reset to 0.
+    </p>
+
+    <form action="{{ route('settings.clean-database') }}" method="POST" style="margin-top:12px; max-width:420px;">
+        @csrf
+
+        <div>
+            <label>Type CLEAN to confirm</label>
+            <input
+                type="text"
+                name="confirmation"
+                value="{{ old('confirmation') }}"
+                required
+            >
+        </div>
+
+        <div style="margin-top:12px;">
+            <button class="btn" type="submit" onclick="return confirm('This will permanently delete attendance, payouts, settings, and other non-user/non-employee data. Continue?')">Clean Database</button>
+        </div>
+    </form>
 </div>
 @endsection

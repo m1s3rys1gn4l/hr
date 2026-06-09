@@ -64,5 +64,6 @@ Route::middleware('admin.auth')->group(function () {
 
 		Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
 		Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+		Route::post('/settings/clean-database', [SettingsController::class, 'cleanDatabase'])->name('settings.clean-database');
 	});
 });
